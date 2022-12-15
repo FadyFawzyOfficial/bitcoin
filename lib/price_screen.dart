@@ -1,3 +1,7 @@
+//! Instead of incorporating the entire io library, I'm going to say only "SHOW"
+//! me the Platform Class.
+import 'dart:io' show Platform;
+
 import 'package:bitcoin/coin_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +16,7 @@ class PriceScreen extends StatefulWidget {
 class PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
 
-  List<DropdownMenuItem<String>> get currencyDropDownItems {
+  DropdownButton<String> get currencyAndroidDropDown {
     List<DropdownMenuItem<String>> currencyItems = [];
     for (String currency in currenciesList) {
       currencyItems.add(
@@ -22,15 +26,29 @@ class PriceScreenState extends State<PriceScreen> {
         ),
       );
     }
-    return currencyItems;
+
+    return DropdownButton<String>(
+      value: selectedCurrency,
+      items: currencyItems,
+      onChanged: (value) => setState(() {
+        if (value != null) selectedCurrency = value;
+      }),
+    );
   }
 
-  List<Text> get currencyPickerItems {
+  CupertinoPicker get currencyIosPicker {
     List<Text> currencyItems = [];
     for (String currency in currenciesList) {
       currencyItems.add(Text(currency));
     }
-    return currencyItems;
+
+    return CupertinoPicker(
+      itemExtent: 32,
+      onSelectedItemChanged: (int value) {
+        print(value);
+      },
+      children: currencyItems,
+    );
   }
 
   @override
@@ -65,27 +83,14 @@ class PriceScreenState extends State<PriceScreen> {
             ),
           ),
           Container(
-              height: 150.0,
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(bottom: 30.0),
-              color: Colors.lightBlue,
-              child: CupertinoPicker(
-                itemExtent: 32,
-                onSelectedItemChanged: (int value) {
-                  print(value);
-                },
-                children: currencyPickerItems,
-              )),
+            height: 150.0,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.only(bottom: 30.0),
+            color: Colors.lightBlue,
+            child: Platform.isIOS ? currencyIosPicker : currencyAndroidDropDown,
+          ),
         ],
       ),
     );
   }
 }
-
-// DropdownButton<String>(
-//               value: selectedCurrency,
-//               items: currencyDropDownItems,
-//               onChanged: (value) => setState(() {
-//                 if (value != null) selectedCurrency = value;
-//               }),
-//             ),
