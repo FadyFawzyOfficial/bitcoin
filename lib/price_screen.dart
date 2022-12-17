@@ -14,7 +14,7 @@ class PriceScreen extends StatefulWidget {
 }
 
 class PriceScreenState extends State<PriceScreen> {
-  String selectedCurrency = 'USD';
+  String selectedCurrency = 'AUD';
   String currencyEquivalent = '?';
 
   DropdownButton<String> get currencyAndroidDropDown {
@@ -33,6 +33,7 @@ class PriceScreenState extends State<PriceScreen> {
       items: currencyItems,
       onChanged: (value) => setState(() {
         if (value != null) selectedCurrency = value;
+        getCurrencyEquivalent();
       }),
     );
   }
@@ -45,9 +46,10 @@ class PriceScreenState extends State<PriceScreen> {
 
     return CupertinoPicker(
       itemExtent: 32,
-      onSelectedItemChanged: (int value) {
-        print(value);
-      },
+      onSelectedItemChanged: (int index) => setState(() {
+        selectedCurrency = currenciesList[index];
+        getCurrencyEquivalent();
+      }),
       children: currencyItems,
     );
   }
