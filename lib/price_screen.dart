@@ -6,6 +6,8 @@ import 'package:bitcoin/coin_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'crypto_card.dart';
+
 class PriceScreen extends StatefulWidget {
   const PriceScreen({super.key});
 
@@ -15,7 +17,8 @@ class PriceScreen extends StatefulWidget {
 
 class PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'AUD';
-  String currencyEquivalent = '?';
+  bool isWaiting = false;
+  Map<String, String> cryptoPrices = {};
 
   DropdownButton<String> get currencyAndroidDropDown {
     List<DropdownMenuItem<String>> currencyItems = [];
@@ -56,11 +59,12 @@ class PriceScreenState extends State<PriceScreen> {
 
   void getCurrencyEquivalent() async {
     try {
-      double lastPrice =
+      isWaiting = true;
+      Map<String, String> data =
           await CoinData().getCoinData(currency: selectedCurrency);
-      setState(() {
-        currencyEquivalent = lastPrice.toStringAsFixed(0);
-      });
+
+      isWaiting = false;
+      setState(() => cryptoPrices = data);
     } catch (e) {
       print(e);
     }
@@ -77,35 +81,21 @@ class PriceScreenState extends State<PriceScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('🤑 Coin Ticker'),
+        centerTitle: true,
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
-                  horizontal: 24,
+        children: [
+          ...cryptoList
+              .map(
+                (crypto) => CryptoCard(
+                  cryptoCurrency: crypto,
+                  currencyEquivalent: isWaiting ? '?' : cryptoPrices[crypto]!,
+                  selectedCurrency: selectedCurrency,
                 ),
-                child: Text(
-                  '1 BTC = $currencyEquivalent $selectedCurrency',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
+              )
+              .toList(),
+          const Spacer(),
           Container(
             height: 150.0,
             alignment: Alignment.center,
