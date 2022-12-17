@@ -86,21 +86,15 @@ class PriceScreenState extends State<PriceScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CryptoCard(
-            cryptoCurrency: cryptoList[0],
-            currencyEquivalent: isWaiting ? '?' : cryptoPrices[cryptoList[0]]!,
-            selectedCurrency: selectedCurrency,
-          ),
-          CryptoCard(
-            cryptoCurrency: cryptoList[1],
-            currencyEquivalent: isWaiting ? '?' : cryptoPrices[cryptoList[1]]!,
-            selectedCurrency: selectedCurrency,
-          ),
-          CryptoCard(
-            cryptoCurrency: cryptoList[2],
-            currencyEquivalent: isWaiting ? '?' : cryptoPrices[cryptoList[2]]!,
-            selectedCurrency: selectedCurrency,
-          ),
+          ...cryptoList
+              .map(
+                (crypto) => CryptoCard(
+                  cryptoCurrency: crypto,
+                  currencyEquivalent: isWaiting ? '?' : cryptoPrices[crypto]!,
+                  selectedCurrency: selectedCurrency,
+                ),
+              )
+              .toList(),
           const Spacer(),
           Container(
             height: 150.0,
